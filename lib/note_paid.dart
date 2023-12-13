@@ -118,18 +118,6 @@ class _NotePaidState extends State<NotePaid> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                // IconButton(
-                                //   onPressed: (){
-                                //     final favourite = FirebaseFirestore.instance
-                                //         .collection("favourite")
-                                //         .doc(snapshot.data!.docs[index].id).set({
-                                //       "title" : snapshot.data!.docs[index]["title"],
-                                //       "notes" : snapshot.data!.docs[index]["notes"]
-                                //     });
-                                //
-                                //   },
-                                //   icon: Icon(Icons.favorite_border,color: textColor[index],),
-                                // ),
                                 IconButton(
                                   onPressed: (){
                                     FirebaseFirestore.instance
@@ -138,6 +126,73 @@ class _NotePaidState extends State<NotePaid> {
                                         .delete();
                                   },
                                   icon: Icon(Icons.delete,color: textColor[index],),
+                                ),
+                                IconButton(
+                                  onPressed: (){
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: Text('NotePad'),
+                                          content: Container(
+                                            height: 250,
+                                            child: Column(
+                                              children: [
+                                                TextFormField(
+                                                  controller: title,
+                                                  decoration: InputDecoration(
+                                                      hintText: "Title",
+                                                      border: OutlineInputBorder(
+                                                        borderRadius: BorderRadius.circular(8),
+                                                      )
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  height: 10,
+                                                ),
+                                                TextFormField(
+                                                  maxLines: 5,
+                                                  controller: notes,
+                                                  decoration: InputDecoration(
+                                                      hintText: "Notes",
+                                                      border: OutlineInputBorder(
+                                                        borderRadius: BorderRadius.circular(8),
+                                                      )
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              onPressed: ()async{
+                                                // Close the dialog
+                                                await FirebaseFirestore.instance.collection("notes").doc(snapshot.data!.docs[index].id).update({
+                                                  "title" : title.text.trim(),
+                                                  "notes" : notes.text.trim(),
+                                                }).then((value){
+                                                  Navigator.pop(context);
+                                                  title.clear();
+                                                  notes.clear();
+                                                }).onError((error, stackTrace){
+                                                  print(error);
+                                                });
+                                              },
+                                              child: Text('Update'),
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
+                                                // Close the dialog
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: Text('cancel'),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                                  icon: Icon(Icons.edit,color: textColor[index],),
                                 ),
                               ],
                             ),
